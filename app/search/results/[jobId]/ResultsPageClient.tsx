@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { CandidateTable } from "@/components/results/CandidateTable"
 import { Filters, type ResultFilters } from "@/components/results/Filters"
 import { Pagination } from "@/components/results/Pagination"
+import { DownloadCsvButton } from "@/components/results/DownloadCsvButton"
 import { useSearchResults } from "@/hooks/use-search-results"
 import { ApiError } from "@/lib/api-client"
 
@@ -112,9 +113,12 @@ function ResultsContent({ jobId }: { jobId: number }) {
             {!isPending && !isError && data && data.status === "completed" && (
               <Card className="rounded-xl border-border/60 shadow-sm">
                 <CardHeader className="gap-4">
-                  <CardTitle className="text-base">
-                    {data.results.length} candidate{data.results.length === 1 ? "" : "s"} found
-                  </CardTitle>
+                  <div className="flex items-center justify-between gap-4">
+                    <CardTitle className="text-base">
+                      {data.results.length} candidate{data.results.length === 1 ? "" : "s"} found
+                    </CardTitle>
+                    <DownloadCsvButton jobId={jobId} candidates={filteredResults} />
+                  </div>
                   <Filters filters={filters} onFiltersChange={handleFiltersChange} />
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">

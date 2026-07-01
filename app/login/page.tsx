@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { Sparkles } from "lucide-react"
 
@@ -41,7 +42,9 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent className="px-8 pb-8">
             <div className="[&_label]:text-white/80 [&_input]:border-white/15 [&_input]:bg-white/5 [&_input]:text-white [&_input::placeholder]:text-white/30">
-              <LoginForm />
+              <Suspense fallback={null}>
+                <LoginForm />
+              </Suspense>
             </div>
           </CardContent>
         </Card>
