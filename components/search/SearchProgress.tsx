@@ -1,29 +1,35 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { useEffect } from "react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { useJobStream } from "@/hooks/use-job-stream"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { useJobStream } from "@/hooks/use-job-stream";
 
 interface SearchProgressProps {
-  jobId: number
-  onCompleted: (jobId: number) => void
-  onFailed: () => void
-  onRetry: () => void
+  jobId: number;
+  onCompleted: (jobId: number) => void;
+  onFailed: () => void;
+  onRetry: () => void;
 }
 
-export function SearchProgress({ jobId, onCompleted, onFailed, onRetry }: SearchProgressProps) {
-  const { status, progress, currentStep, error, isConnected } = useJobStream(jobId)
+export function SearchProgress({
+  jobId,
+  onCompleted,
+  onFailed,
+  onRetry,
+}: SearchProgressProps) {
+  const { status, progress, currentStep, error, isConnected } =
+    useJobStream(jobId);
 
   useEffect(() => {
-    if (status === "completed") onCompleted(jobId)
-    if (status === "failed") onFailed()
-  }, [status, jobId, onCompleted, onFailed])
+    if (status === "completed") onCompleted(jobId);
+    if (status === "failed") onFailed();
+  }, [status, jobId, onCompleted, onFailed]);
 
-  if (status === "completed") return null
+  if (status === "completed") return null;
 
   if (status === "failed" || error) {
     return (
@@ -37,7 +43,9 @@ export function SearchProgress({ jobId, onCompleted, onFailed, onRetry }: Search
               {status === "failed" ? "The search failed" : "Connection lost"}
             </p>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              {currentStep || error || "Something went wrong while running your search."}
+              {currentStep ||
+                error ||
+                "Something went wrong while running your search."}
             </p>
           </div>
           <Button variant="outline" onClick={onRetry}>
@@ -45,7 +53,7 @@ export function SearchProgress({ jobId, onCompleted, onFailed, onRetry }: Search
           </Button>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -59,13 +67,17 @@ export function SearchProgress({ jobId, onCompleted, onFailed, onRetry }: Search
       <CardContent className="flex flex-col gap-3">
         <Progress value={progress} />
         <div className="flex items-center justify-between text-sm">
-          <span className="text-foreground">{currentStep || "Connecting..."}</span>
+          <span className="text-foreground">
+            {currentStep || "Connecting..."}
+          </span>
           <span className="text-muted-foreground">{progress}%</span>
         </div>
         {!isConnected && !error && (
-          <p className="text-xs text-muted-foreground">Reconnecting to progress stream...</p>
+          <p className="text-xs text-muted-foreground">
+            Reconnecting to progress stream...
+          </p>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
