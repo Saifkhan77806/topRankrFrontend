@@ -61,6 +61,37 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return res.json() as Promise<T>
 }
 
+async function requestBlob(path: string, options: RequestOptions = {}): Promise<Blob> {
+  const { auth = false, headers, ...rest } = options
+
+  const finalHeaders: HeadersInit = { ...headers }
+
+  if (auth) {
+    const token = getStoredToken()
+    if (token) {
+      ;(finalHeaders as Record<string, string>).Authorization = `Bearer ${token}`
+    }
+  }
+
+  const res = await fetch(`${API_URL}${path}`, {
+    ...rest,
+    headers: finalHeaders,
+  })
+
+  if (!res.ok) {
+    let message = res.statusText
+    try {
+      const body = await res.json()
+      message = body?.detail ?? body?.message ?? message
+    } catch {
+      // response had no JSON body
+    }
+    throw new ApiError(message, res.status)
+  }
+
+  return res.blob()
+}
+
 export const apiClient = {
   get: <T>(path: string, options?: RequestOptions) =>
     request<T>(path, { ...options, method: "GET" }),
@@ -70,4 +101,6 @@ export const apiClient = {
       method: "POST",
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
+  getBlob: (path: string, options?: RequestOptions) =>
+    requestBlob(path, { ...options, method: "GET" }),
 }

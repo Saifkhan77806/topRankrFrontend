@@ -1,23 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { Briefcase, FileText, Loader2, Mail, Phone } from "lucide-react"
+import { Briefcase, FileText, Mail, Phone } from "lucide-react"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { candidateService } from "@/services/recruiter/candidate-service"
-import { ApiError } from "@/lib/api-client"
+import { PDFViewer } from "@/components/candidate/PDFViewer"
+import { DownloadButton } from "@/components/candidate/DownloadButton"
 import type { CandidateDetail } from "@/types/candidate"
 
 interface ProfileHeaderProps {
   candidate: CandidateDetail
+  autoOpenResume?: boolean
 }
 
-export function ProfileHeader({ candidate }: ProfileHeaderProps) {
-  const [isFetchingResume, setIsFetchingResume] = useState(false)
-  const [resumeError, setResumeError] = useState<string | null>(null)
+export function ProfileHeader({ candidate, autoOpenResume = false }: ProfileHeaderProps) {
+  const [isViewerOpen, setIsViewerOpen] = useState(autoOpenResume)
 
   const displayName = candidate.name?.trim() || "Unknown Candidate"
   const initials = candidate.name
@@ -29,21 +29,6 @@ export function ProfileHeader({ candidate }: ProfileHeaderProps) {
         .toUpperCase()
     : "?"
   const seniority = candidate.profile.professional?.seniority
-
-  const handleViewResume = async () => {
-    setResumeError(null)
-    setIsFetchingResume(true)
-    try {
-      const metadata = await candidateService.getResumeMetadata(candidate.id)
-      window.open(metadata.resume_path, "_blank", "noopener,noreferrer")
-    } catch (error) {
-      setResumeError(
-        error instanceof ApiError ? error.message : "Could not load the resume."
-      )
-    } finally {
-      setIsFetchingResume(false)
-    }
-  }
 
   return (
     <Card className="rounded-xl border-border/60 shadow-sm">
@@ -104,14 +89,23 @@ export function ProfileHeader({ candidate }: ProfileHeaderProps) {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-1.5">
-          <Button variant="outline" onClick={handleViewResume} disabled={isFetchingResume}>
-            {isFetchingResume ? <Loader2 className="animate-spin" /> : <FileText />}
-            {isFetchingResume ? "Loading resume..." : "View resume"}
-          </Button>
-          {resumeError && <p className="text-xs text-destructive">{resumeError}</p>}
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setIsViewerOpen(true)}>
+              <FileText />
+              View resume
+            </Button>
+            <DownloadButton candidateId={candidate.id} candidateName={candidate.name} />
+          </div>
         </div>
       </CardContent>
+
+      <PDFViewer
+        candidateId={candidate.id}
+        candidateName={displayName}
+        open={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
+      />
     </Card>
   )
 }

@@ -8,12 +8,6 @@ export class CandidateNotFoundError extends Error {
   }
 }
 
-interface ResumeMetadata {
-  candidate_id: number
-  name: string
-  resume_path: string
-}
-
 export const candidateService = {
   getCandidateDetail: async (candidateId: number): Promise<CandidateDetail> => {
     const response = await apiClient.get<CandidateDetailResponse>(
@@ -27,9 +21,4 @@ export const candidateService = {
 
     return response.data
   },
-
-  getResumeMetadata: (candidateId: number) =>
-    apiClient.get<ResumeMetadata>(`/candidate/${candidateId}/resume`, {
-      auth: true,
-    }),
 }
