@@ -9,6 +9,8 @@ import {
   Scale,
   Search,
   Settings,
+  ShieldAlert,
+  Sparkles,
   Users,
 } from "lucide-react"
 
@@ -20,7 +22,9 @@ const MENU_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/candidates", label: "Candidates", icon: Users },
   { href: "/compare", label: "Compare", icon: Scale },
+  { href: "/recommendations", label: "Recommendations", icon: Sparkles },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/security", label: "Security", icon: ShieldAlert },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
