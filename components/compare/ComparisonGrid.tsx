@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { CandidateLink } from "@/components/candidate/CandidateLink"
 import { cn } from "@/lib/utils"
 import type { ComparisonResponse, ComparisonCandidate } from "@/types/comparison"
 
@@ -83,7 +84,14 @@ export function ComparisonGrid({ comparison }: ComparisonGridProps) {
                     "bg-primary/5 text-primary"
                 )}
               >
-                {candidate.name}
+                <CandidateLink
+                  candidateId={candidate.candidate_id}
+                  name={candidate.name}
+                  jobId={comparison.job_id}
+                  className="hover:underline"
+                >
+                  {candidate.name}
+                </CandidateLink>
                 {candidate.candidate_id === comparison.winner.winner && (
                   <Badge className="ml-2">Winner</Badge>
                 )}

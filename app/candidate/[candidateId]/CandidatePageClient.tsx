@@ -24,6 +24,8 @@ function CandidateContent({ candidateId }: { candidateId: number }) {
   const { data: candidate, isPending, isError, error } = useCandidateDetail(candidateId)
   const searchParams = useSearchParams()
   const autoOpenResume = searchParams.get("resume") === "1"
+  const jobIdParam = searchParams.get("jobId")
+  const jobId = jobIdParam ? Number(jobIdParam) : null
 
   const isNotFound = error instanceof CandidateNotFoundError
 
@@ -82,7 +84,11 @@ function CandidateContent({ candidateId }: { candidateId: number }) {
 
             {!isPending && !isError && candidate && (
               <>
-                <ProfileHeader candidate={candidate} autoOpenResume={autoOpenResume} />
+                <ProfileHeader
+                  candidate={candidate}
+                  autoOpenResume={autoOpenResume}
+                  jobId={jobId}
+                />
 
                 <Card className="rounded-xl border-border/60 shadow-sm">
                   <CardHeader className="text-base font-medium">Summary</CardHeader>

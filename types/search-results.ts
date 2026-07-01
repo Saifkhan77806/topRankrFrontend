@@ -14,6 +14,7 @@ export interface SearchResultItem {
   ranking_score: number | null
   ai_reason: string | null
   explanation: CandidateExplanation | null
+  recommendation: string | null
 }
 
 export interface SearchResultsResponse {

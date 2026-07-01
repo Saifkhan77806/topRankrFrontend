@@ -141,7 +141,7 @@ function ResultsContent({ jobId }: { jobId: number }) {
 
                   {paginatedResults.length > 0 && (
                     <>
-                      <CandidateTable candidates={paginatedResults} />
+                      <CandidateTable jobId={jobId} candidates={paginatedResults} />
                       <Pagination
                         page={currentPage}
                         pageCount={pageCount}

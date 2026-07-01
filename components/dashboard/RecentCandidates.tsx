@@ -1,12 +1,14 @@
 "use client"
 
-import { Users } from "lucide-react"
+import { ArrowRight, Users } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { CandidateLink } from "@/components/candidate/CandidateLink"
 import { useRecentCandidates } from "@/hooks/use-recent-candidates"
 import { ApiError } from "@/lib/api-client"
 
@@ -73,9 +75,14 @@ export function RecentCandidates() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-sm font-medium text-foreground">
+                  <CandidateLink
+                    candidateId={candidate.candidate_id}
+                    name={candidate.name}
+                    jobId={candidate.jobId}
+                    className="text-sm font-medium text-foreground hover:underline"
+                  >
                     {displayName}
-                  </span>
+                  </CandidateLink>
                   <span className="text-xs text-muted-foreground">
                     {candidate.email ?? "No email on file"} · Job #{candidate.jobId}
                   </span>
@@ -85,6 +92,20 @@ export function RecentCandidates() {
                     {Math.round(candidate.ranking_score * 100)}%
                   </Badge>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  render={
+                    <CandidateLink
+                      candidateId={candidate.candidate_id}
+                      name={candidate.name}
+                      jobId={candidate.jobId}
+                    />
+                  }
+                >
+                  <ArrowRight />
+                  <span className="sr-only">View candidate</span>
+                </Button>
               </div>
             )
           })}

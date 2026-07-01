@@ -1,43 +1,21 @@
-import { useQueries } from "@tanstack/react-query"
-import { recruiterService } from "@/services/recruiter/recruiter-service"
-import { useAuthStore } from "@/store/auth-store"
-import { useJobs } from "@/hooks/use-jobs"
-import type { CandidateResult } from "@/types/recruiter"
+import { useAllSearchResults } from "@/hooks/use-all-search-results"
+import type { SearchResultItem } from "@/types/search-results"
 
 const JOBS_TO_SCAN = 5
 const CANDIDATES_TO_SHOW = 5
 
-export interface RecentCandidate extends CandidateResult {
+export interface RecentCandidate extends SearchResultItem {
   jobId: number
 }
 
 export function useRecentCandidates() {
-  const token = useAuthStore((state) => state.token)
-  const jobsQuery = useJobs()
+  const { jobResults, isPending, isError, error } = useAllSearchResults(JOBS_TO_SCAN)
 
-  const completedJobIds = (jobsQuery.data ?? [])
-    .filter((job) => job.status === "completed")
-    .slice(0, JOBS_TO_SCAN)
-    .map((job) => job.id)
-
-  const resultsQueries = useQueries({
-    queries: completedJobIds.map((jobId) => ({
-      queryKey: ["recruiter", "job-results", jobId],
-      queryFn: () => recruiterService.getJobResults(jobId),
-      enabled: !!token && !!jobId,
-    })),
-  })
-
-  const isLoading =
-    jobsQuery.isPending || (completedJobIds.length > 0 && resultsQueries.some((q) => q.isPending))
-  const isError = jobsQuery.isError || resultsQueries.some((q) => q.isError)
-  const error = jobsQuery.error ?? resultsQueries.find((q) => q.error)?.error ?? null
-
-  const candidates: RecentCandidate[] = resultsQueries
-    .flatMap((q) =>
-      (q.data?.results ?? []).map((result) => ({
+  const candidates: RecentCandidate[] = jobResults
+    .flatMap((jobResult) =>
+      jobResult.results.map((result) => ({
         ...result,
-        jobId: q.data!.job_id,
+        jobId: jobResult.job_id,
       }))
     )
     .sort((a, b) => (b.ranking_score ?? 0) - (a.ranking_score ?? 0))
@@ -45,7 +23,7 @@ export function useRecentCandidates() {
 
   return {
     data: candidates,
-    isPending: isLoading,
+    isPending,
     isError,
     error,
   }

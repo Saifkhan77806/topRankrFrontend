@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useSyncExternalStore } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -20,6 +20,7 @@ function getServerHasHydrated() {
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const pathname = usePathname()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const hasHydrated = useSyncExternalStore(
     subscribeToHydration,
@@ -29,9 +30,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (hasHydrated && !isAuthenticated) {
-      router.replace("/login")
+      const loginUrl = new URL("/login", window.location.origin)
+      loginUrl.searchParams.set("from", pathname)
+      router.replace(`${loginUrl.pathname}${loginUrl.search}`)
     }
-  }, [hasHydrated, isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, pathname, router])
 
   if (!hasHydrated || !isAuthenticated) {
     return (

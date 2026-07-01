@@ -1,6 +1,6 @@
 "use client"
 
-import { Users } from "lucide-react"
+import { ArrowRight, Users } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -12,8 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { CandidateLink } from "@/components/candidate/CandidateLink"
 import { useJobs } from "@/hooks/use-jobs"
 import { useSearchResults } from "@/hooks/use-search-results"
 import { ApiError } from "@/lib/api-client"
@@ -137,6 +139,21 @@ export function CandidateSelector({
                           {Math.round(candidate.ranking_score)}%
                         </Badge>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={(event) => event.stopPropagation()}
+                        render={
+                          <CandidateLink
+                            candidateId={candidate.candidate_id}
+                            name={candidate.name}
+                            jobId={jobId ?? undefined}
+                          />
+                        }
+                      >
+                        <ArrowRight />
+                        <span className="sr-only">View Candidate</span>
+                      </Button>
                     </label>
                   )
                 })}

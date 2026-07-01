@@ -1,15 +1,12 @@
 import { apiClient } from "@/lib/api-client"
-import type {
-  FeedbackStats,
-  JobResultsResponse,
-  SearchJob,
-} from "@/types/recruiter"
+import type { FeedbackStats, SearchJob } from "@/types/recruiter"
+import type { SearchResultsResponse } from "@/types/search-results"
 
 export const recruiterService = {
   getJobs: () => apiClient.get<SearchJob[]>("/recruiter/jobs", { auth: true }),
 
   getJobResults: (jobId: number) =>
-    apiClient.get<JobResultsResponse>(`/recruiter/search/${jobId}/results`, {
+    apiClient.get<SearchResultsResponse>(`/recruiter/search/${jobId}/results`, {
       auth: true,
     }),
 

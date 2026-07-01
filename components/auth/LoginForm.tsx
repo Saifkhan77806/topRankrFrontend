@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -23,6 +24,8 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const sessionExpired = searchParams.get("reason") === "expired"
   const loginMutation = useLogin()
 
   const {
@@ -50,6 +53,15 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      {sessionExpired && !submitError && (
+        <Alert className="border-amber-400/30 bg-amber-400/10">
+          <AlertTitle className="text-amber-300">Session expired</AlertTitle>
+          <AlertDescription className="text-amber-200/80">
+            Your session has ended. Please sign in again to continue.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {submitError && (
         <Alert variant="destructive">
           <AlertTitle>Login failed</AlertTitle>

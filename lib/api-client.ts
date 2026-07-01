@@ -1,5 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+export const SESSION_EXPIRED_EVENT = "toprankr:session-expired"
+
 export class ApiError extends Error {
   status: number
 
@@ -8,6 +10,11 @@ export class ApiError extends Error {
     this.name = "ApiError"
     this.status = status
   }
+}
+
+function notifySessionExpired() {
+  if (typeof window === "undefined") return
+  window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
 }
 
 function getStoredToken(): string | null {
@@ -53,6 +60,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     } catch {
       // response had no JSON body
     }
+    if (auth && res.status === 401) notifySessionExpired()
     throw new ApiError(message, res.status)
   }
 
@@ -86,6 +94,7 @@ async function requestBlob(path: string, options: RequestOptions = {}): Promise<
     } catch {
       // response had no JSON body
     }
+    if (auth && res.status === 401) notifySessionExpired()
     throw new ApiError(message, res.status)
   }
 

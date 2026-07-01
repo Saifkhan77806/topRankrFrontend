@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Sparkles } from "lucide-react"
+import { ArrowRight, FileText, Sparkles } from "lucide-react"
 
 import {
   Table,
@@ -27,16 +27,24 @@ import {
 } from "@/components/ui/dialog"
 import { AIScoreCard } from "@/components/results/AIScoreCard"
 import { ExplanationCard } from "@/components/results/ExplanationCard"
+import { CandidateLink } from "@/components/candidate/CandidateLink"
+import { PDFViewer } from "@/components/candidate/PDFViewer"
+import { ShortlistButton } from "@/components/feedback/ShortlistButton"
+import { RejectButton } from "@/components/feedback/RejectButton"
+import { InterviewButton } from "@/components/feedback/InterviewButton"
+import { HireButton } from "@/components/feedback/HireButton"
 import type { SearchResultItem } from "@/types/search-results"
 
 const AI_REASON_TRUNCATE_LENGTH = 60
 
 interface CandidateTableProps {
+  jobId: number
   candidates: SearchResultItem[]
 }
 
-export function CandidateTable({ candidates }: CandidateTableProps) {
+export function CandidateTable({ jobId, candidates }: CandidateTableProps) {
   const [activeCandidate, setActiveCandidate] = useState<SearchResultItem | null>(null)
+  const [resumeCandidate, setResumeCandidate] = useState<SearchResultItem | null>(null)
 
   return (
     <>
@@ -66,7 +74,16 @@ export function CandidateTable({ candidates }: CandidateTableProps) {
                 <TableCell className="font-medium text-muted-foreground">
                   #{candidate.rank}
                 </TableCell>
-                <TableCell className="font-medium text-foreground">{displayName}</TableCell>
+                <TableCell className="font-medium text-foreground">
+                  <CandidateLink
+                    candidateId={candidate.candidate_id}
+                    name={candidate.name}
+                    jobId={jobId}
+                    className="hover:underline"
+                  >
+                    {displayName}
+                  </CandidateLink>
+                </TableCell>
                 <TableCell className="text-muted-foreground">{displayEmail}</TableCell>
                 <TableCell>
                   {candidate.ranking_score !== null ? (
@@ -101,6 +118,20 @@ export function CandidateTable({ candidates }: CandidateTableProps) {
                 <TableCell>
                   <div className="flex items-center justify-end gap-1.5">
                     <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      render={
+                        <CandidateLink
+                          candidateId={candidate.candidate_id}
+                          name={candidate.name}
+                          jobId={jobId}
+                        />
+                      }
+                    >
+                      <ArrowRight />
+                      <span className="sr-only">View Candidate</span>
+                    </Button>
+                    <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setActiveCandidate(candidate)}
@@ -111,13 +142,7 @@ export function CandidateTable({ candidates }: CandidateTableProps) {
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      render={
-                        <a
-                          href={candidate.resume_path}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        />
-                      }
+                      onClick={() => setResumeCandidate(candidate)}
                     >
                       <FileText />
                       <span className="sr-only">View resume</span>
@@ -154,10 +179,27 @@ export function CandidateTable({ candidates }: CandidateTableProps) {
                 aiReason={activeCandidate.ai_reason}
                 explanation={activeCandidate.explanation}
               />
+              <div className="flex flex-wrap gap-2">
+                <ShortlistButton jobId={jobId} candidateId={activeCandidate.candidate_id} />
+                <InterviewButton jobId={jobId} candidateId={activeCandidate.candidate_id} />
+                <HireButton jobId={jobId} candidateId={activeCandidate.candidate_id} />
+                <RejectButton jobId={jobId} candidateId={activeCandidate.candidate_id} />
+              </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {resumeCandidate && (
+        <PDFViewer
+          candidateId={resumeCandidate.candidate_id}
+          candidateName={resumeCandidate.name?.trim() || "Unknown candidate"}
+          open={!!resumeCandidate}
+          onOpenChange={(open) => {
+            if (!open) setResumeCandidate(null)
+          }}
+        />
+      )}
     </>
   )
 }
