@@ -17,7 +17,6 @@ import { WinnerCard } from "@/components/compare/WinnerCard"
 import { RadarChart } from "@/components/compare/RadarChart"
 import { useCompare } from "@/hooks/use-compare"
 import { RateLimitError } from "@/services/recruiter/comparison-service"
-import { ApiError } from "@/lib/api-client"
 
 function CompareContent() {
   const [jobId, setJobId] = useState<number | null>(null)

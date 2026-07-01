@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { resumeService } from "@/services/recruiter/resume-service"
 import { useAuthStore } from "@/store/auth-store"
 
 export function useResume(candidateId: number, enabled: boolean) {
   const token = useAuthStore((state) => state.token)
-  const [objectUrl, setObjectUrl] = useState<string | null>(null)
 
   const query = useQuery({
     queryKey: ["recruiter", "resume", candidateId],
@@ -15,23 +14,17 @@ export function useResume(candidateId: number, enabled: boolean) {
     gcTime: 0,
   })
 
+  const blob = query.data ?? null
+  const objectUrl = useMemo(() => (blob ? URL.createObjectURL(blob) : null), [blob])
+
   useEffect(() => {
-    if (!query.data) {
-      setObjectUrl(null)
-      return
-    }
-
-    const url = URL.createObjectURL(query.data)
-    setObjectUrl(url)
-
     return () => {
-      URL.revokeObjectURL(url)
-      setObjectUrl(null)
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
-  }, [query.data])
+  }, [objectUrl])
 
   return {
-    blob: query.data ?? null,
+    blob,
     objectUrl,
     isPending: query.isPending && enabled,
     isError: query.isError,
