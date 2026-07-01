@@ -12,6 +12,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -109,14 +110,16 @@ export function Navbar() {
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="flex flex-col gap-0.5">
-              <span className="font-medium text-foreground">
-                {user?.email ?? "Signed in"}
-              </span>
-              <span className="text-xs font-normal capitalize text-muted-foreground">
-                {role ?? "member"}
-              </span>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex flex-col gap-0.5">
+                <span className="font-medium text-foreground">
+                  {user?.email ?? "Signed in"}
+                </span>
+                <span className="text-xs font-normal capitalize text-muted-foreground">
+                  {role ?? "member"}
+                </span>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem render={<Link href="/profile" />}>
               Profile

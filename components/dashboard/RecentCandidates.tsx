@@ -89,7 +89,7 @@ export function RecentCandidates() {
                 </div>
                 {candidate.ranking_score !== null && (
                   <Badge variant="secondary">
-                    {Math.round(candidate.ranking_score * 100)}%
+                    {Math.round(candidate.ranking_score * 100)/100}%
                   </Badge>
                 )}
                 <Button

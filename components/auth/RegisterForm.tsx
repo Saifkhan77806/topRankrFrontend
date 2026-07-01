@@ -1,24 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useWatch } from "react-hook-form"
-import { z } from "zod"
-import { useRouter } from "next/navigation"
-import { CheckCircle2, Loader2 } from "lucide-react"
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { cn } from "@/lib/utils"
-import { useRegister } from "@/hooks/use-register"
-import { ApiError } from "@/lib/api-client"
-import type { Role } from "@/types/auth"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
+import { useRegister } from "@/hooks/use-register";
+import { ApiError } from "@/lib/api-client";
+import type { Role } from "@/types/auth";
 
 const registerSchema = z
   .object({
-    email: z.string().min(1, "Email is required").email("Enter a valid email address"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
     role: z.enum(["recruiter", "admin"]),
@@ -26,28 +29,28 @@ const registerSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  })
+  });
 
-type RegisterFormValues = z.infer<typeof registerSchema>
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const ROLE_OPTIONS: { value: Role; label: string; description: string }[] = [
-  {
-    value: "recruiter",
-    label: "Recruiter",
-    description: "Search, compare, and shortlist candidates",
-  },
-  {
-    value: "admin",
-    label: "Admin",
-    description: "Full access, including team and settings management",
-  },
-]
+  //   {
+  //     value: "recruiter",
+  //     label: "Recruiter",
+  //     description: "Search, compare, and shortlist candidates",
+  //   },
+  //   {
+  //     value: "admin",
+  //     label: "Admin",
+  //     description: "Full access, including team and settings management",
+  //   },
+];
 
 export function RegisterForm() {
-  const router = useRouter()
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const registerMutation = useRegister()
+  const router = useRouter();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const registerMutation = useRegister();
 
   const {
     register,
@@ -63,27 +66,29 @@ export function RegisterForm() {
       confirmPassword: "",
       role: "recruiter",
     },
-  })
+  });
 
-  const selectedRole = useWatch({ control, name: "role" })
+  const selectedRole = useWatch({ control, name: "role" });
 
   const onSubmit = (values: RegisterFormValues) => {
-    setSubmitError(null)
+    setSubmitError(null);
     registerMutation.mutate(
       { email: values.email, password: values.password, role: values.role },
       {
         onSuccess: () => {
-          setSuccess(true)
-          setTimeout(() => router.push("/login"), 1500)
+          setSuccess(true);
+          setTimeout(() => router.push("/login"), 1500);
         },
         onError: (error) => {
           setSubmitError(
-            error instanceof ApiError ? error.message : "Something went wrong. Please try again."
-          )
+            error instanceof ApiError
+              ? error.message
+              : "Something went wrong. Please try again.",
+          );
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   if (success) {
     return (
@@ -94,7 +99,7 @@ export function RegisterForm() {
           Redirecting you to sign in...
         </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -147,7 +152,9 @@ export function RegisterForm() {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.confirmPassword.message}
+          </p>
         )}
       </div>
 
@@ -158,15 +165,19 @@ export function RegisterForm() {
             <button
               key={option.value}
               type="button"
-              onClick={() => setValue("role", option.value, { shouldValidate: true })}
+              onClick={() =>
+                setValue("role", option.value, { shouldValidate: true })
+              }
               className={cn(
                 "flex flex-col gap-0.5 rounded-xl border px-3.5 py-3 text-left transition-all",
                 selectedRole === option.value
                   ? "border-indigo-400 bg-indigo-400/10 ring-1 ring-indigo-400"
-                  : "border-white/15 hover:bg-white/5"
+                  : "border-white/15 hover:bg-white/5",
               )}
             >
-              <span className="text-sm font-medium text-white">{option.label}</span>
+              <span className="text-sm font-medium text-white">
+                {option.label}
+              </span>
               <span className="text-xs text-white/50">
                 {option.description}
               </span>
@@ -185,5 +196,5 @@ export function RegisterForm() {
         {registerMutation.isPending ? "Creating account..." : "Create account"}
       </Button>
     </form>
-  )
+  );
 }
