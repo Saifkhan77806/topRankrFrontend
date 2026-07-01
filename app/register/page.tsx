@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Sparkles } from "lucide-react"
+import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
 import {
   Card,
@@ -7,8 +7,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { RegisterForm } from "@/components/auth/RegisterForm"
+} from "@/components/ui/card";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 export default function RegisterPage() {
   return (
@@ -34,7 +34,9 @@ export default function RegisterPage() {
 
         <Card className="w-full border-white/10 bg-white/[0.07] shadow-2xl shadow-black/40 backdrop-blur-xl">
           <CardHeader className="gap-1.5 px-8 pt-8">
-            <CardTitle className="text-2xl text-white">Create your account</CardTitle>
+            <CardTitle className="text-2xl text-white">
+              Create your account
+            </CardTitle>
             <CardDescription className="text-white/60">
               Set up your workspace to start ranking candidates with AI
             </CardDescription>
@@ -48,11 +50,14 @@ export default function RegisterPage() {
 
         <p className="text-sm text-white/50">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-indigo-300 hover:text-indigo-200">
+          <Link
+            href="/login"
+            className="font-medium text-indigo-300 hover:text-indigo-200"
+          >
             Sign in
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }
